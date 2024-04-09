@@ -1,0 +1,405 @@
+openapi: 3.0.1
+info:
+  title: Timeseries
+  description: Analyze Timeseries API
+  version: 0.1.0
+paths:
+  /auth/token/:
+    post:
+      tags:
+        - auth
+      summary: Login For Access Token
+      operationId: login_for_access_token_auth_token__post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_login_for_access_token_auth_token__post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/me/:
+    get:
+      tags:
+        - auth
+      summary: Read Users Me
+      operationId: read_users_me_auth_me__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+      security:
+        - OAuth2PasswordBearer: []
+  /auth/register/:
+    post:
+      tags:
+        - auth
+      summary: Create New User
+      operationId: create_new_user_auth_register__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserSchema'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/login/:
+    post:
+      tags:
+        - auth
+      summary: Login
+      operationId: login_auth_login__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserSchema'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/change_password/:
+    patch:
+      tags:
+        - auth
+      summary: Change Password
+      operationId: change_password_auth_change_password__patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserChangePassword'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - OAuth2PasswordBearer: []
+  /users/change_username/:
+    patch:
+      tags:
+        - user
+      summary: Change Username
+      operationId: change_username_users_change_username__patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserChangeName'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - OAuth2PasswordBearer: []
+  /users/{user_id}:
+    delete:
+      tags:
+        - user
+      summary: Delete User
+      operationId: delete_user_users_delete__user_id__delete
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: User Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: boolean
+                title: Response Delete User Users Delete  User Id  Delete
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /testing/:
+    get:
+      summary: Read Root
+      operationId: read_root_testing__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+              
+  /datasets:
+    post:
+      tags:
+        - dataset
+      summary: Upload dataset file
+      security:
+        - OAuth2PasswordBearer: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+                  x-mimetype: application/csv
+              required:
+                - file
+                - name
+      responses:
+        '201':
+          description: Dataset uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '415':
+          description: Unsupported media type
+          
+    get:
+      tags:
+        - dataset
+      summary: Get user datasets
+      security:
+        - OAuth2PasswordBearer: []
+      responses:
+        '200':
+          description: Dataset uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+        '401':
+          description: Unauthorized
+          
+  /datasets/{dataset_id}:
+    get:
+      tags:
+        - dataset
+      parameters:
+      - name: dataset_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      summary: Get all information about dataset
+      security:
+        - OAuth2PasswordBearer: []
+      responses:
+        '200':
+          description: Dataset uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+        '401':
+          description: Unauthorized
+      
+
+components:
+  schemas:
+    Body_login_for_access_token_auth_token__post:
+      properties:
+        grant_type:
+          anyOf:
+            - type: string
+              pattern: password
+          title: Grant Type
+        username:
+          type: string
+          title: Username
+        password:
+          type: string
+          title: Password
+        scope:
+          type: string
+          title: Scope
+          default: ''
+        client_id:
+          anyOf:
+            - type: string
+          title: Client Id
+        client_secret:
+          anyOf:
+            - type: string
+          title: Client Secret
+      type: object
+      required:
+        - username
+        - password
+      title: Body_login_for_access_token_auth_token__post
+    CreateUserSchema:
+      properties:
+        username:
+          type: string
+          title: Username
+        password:
+          type: string
+          title: Password
+      type: object
+      required:
+        - username
+        - password
+      title: CreateUserSchema
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    Token:
+      properties:
+        access_token:
+          type: string
+          title: Access Token
+        token_type:
+          type: string
+          title: Token Type
+      type: object
+      required:
+        - access_token
+        - token_type
+      title: Token
+    UserChangeName:
+      properties:
+        username:
+          type: string
+          title: Username
+      type: object
+      required:
+        - username
+      title: UserChangeName
+    UserChangePassword:
+      properties:
+        password:
+          type: string
+          title: Password
+      type: object
+      required:
+        - password
+      title: UserChangePassword
+    UserSchema:
+      properties:
+        username:
+          type: string
+          title: Username
+      type: object
+      required:
+        - username
+      title: UserSchema
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError
+      
+    Dataset:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: Unique identifier of the dataset
+          name:
+            type: string
+            description: Name of the dataset
+          createdAt:
+            type: string
+            format: date-time
+            description: Date and time when the dataset was created
+      
+      
+  securitySchemes:
+    OAuth2PasswordBearer:
+      type: oauth2
+      flows:
+        password:
+          scopes: {}
+          tokenUrl: auth/token/
