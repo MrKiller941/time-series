@@ -1,0 +1,60 @@
+services:
+  db:
+    image: postgres:16-alpine
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=diploma
+      - POSTGRES_USER=diploma
+      - POSTGRES_PASSWORD=diploma
+    ports:
+      - ${DB_PORT:-5432}:5432
+    networks:
+      - diploma
+
+  series:
+    image: timescale/timescaledb:latest-pg16
+    volumes:
+      - series_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=diploma
+      - POSTGRES_USER=diploma
+      - POSTGRES_PASSWORD=diploma
+    ports:
+      - ${SERIES_PORT:-5432}:5432
+    networks:
+      - diploma
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/home/app/diploma
+    command: >
+      bash -c "python app/main.py"
+    ports:
+      - 8080:5000
+    depends_on:
+      - db
+      - series
+    networks:
+      - diploma
+  merlion:
+    build:
+      context: .
+      dockerfile: Dockerfile.merlion
+    ports:
+      - 8081:80
+    depends_on:
+      - db
+      - series
+    networks:
+      - diploma
+
+volumes:
+  db_data:
+  series_data:
+
+networks:
+  diploma:

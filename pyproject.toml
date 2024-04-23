@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "diploma"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+flasgger = "^0.9.7.1"
+flask-login = "^0.6.3"
+numpy = "^1.26.4"
+pandas = "^2.2.2"
+sqlalchemy = "^2.0.29"
+flask-bcrypt = "^1.0.1"
+pydantic = "^2.7.0"
+psycopg2-binary = "^2.9.9"
+black = "^24.4.0"
+salesforce-merlion = "^2.0.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

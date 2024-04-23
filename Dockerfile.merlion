@@ -1,0 +1,10 @@
+FROM python:3.9-slim-buster
+WORKDIR /opt/Merlion
+# Install Java
+RUN rm -rf /var/lib/apt/lists/* && \
+    apt-get clean && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends gcc python3-dev openjdk-11-jre-headless && \
+    rm -rf /var/lib/apt/lists/*
+RUN pip install gunicorn salesforce-merlion[dashboard]
+CMD gunicorn -b 0.0.0.0:80 merlion.dashboard.server:server
